@@ -1,0 +1,24 @@
+<form method="POST">
+	<label>Name*</label>
+	<input name="name" type="text" class="text required" />
+	
+	<label>Email*</label>
+	<input name="email" type="text" class="text required email remote" />
+	
+	<p>Try <i>fgnass@neteye.de</i> to trigger a remote validation error.</p>
+	<input type="submit" class="submit" name="submit">
+</form>
+
+
+<script runat="client+server">
+	$('form').validate({
+		wrapper: 'b',
+		errorElement: 'span'
+	});
+</script>
+
+<script runat="server">
+	$('input[name=email]').remote(function(value) {
+		return value != 'fgnass@neteye.de';
+	}, 'Address already taken.');
+</script>
