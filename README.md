@@ -23,7 +23,7 @@ The express-dom module provides a view-engine for express, that allows you to us
 	
 You can control where a script should be executed using the **runat** attribute. A script can either run at the server, the client or at both sides. There's a demo in the example directory, that uses this feature to execute exactly the same form-validation code in the browser that also runs on the server-side:
 
-![Screenshot](https://github.com/downloads/fgnass/fgnass.github.com/Screenshot%20-%20Server-side%20jQuery.png)
+![Screenshot](https://github.com/downloads/fgnass/fgnass.github.com/server-side-jquery.png)
 
 ## Locals
 
