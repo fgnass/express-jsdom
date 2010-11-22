@@ -1,22 +1,22 @@
 {
-	name: "express-jsdom",
-	version: "0.0.1",
-	description: "Server-side DOM for express",
-	homepage: "https://github.com/fgnass/express-jsdom",
-	author: {
-		name: "Felix Gnass",
-		email: "felix.gnass@neteye.de",
-		url: "http://fgnass.posterous.com"
-	},
-	keywords: ["express", "jsdom", "jquery"],
-	dependencies: {
-		jsdom: "0.1.21",
-		htmlparser: "1.6.2",
-		express: "1.0.0rc4"
-	},
-	main: "./index.js",
-	repository: {
-		"type": "git",
-		"url" : "https://github.com/fgnass/express-jsdom.git"
-	}
+  "name": "express-jsdom",
+  "version": "0.0.1",
+  "description": "Server-side DOM for express",
+  "homepage": "https://github.com/fgnass/express-jsdom",
+  "author": {
+    "name": "Felix Gnass",
+    "email": "felix.gnass@neteye.de",
+    "url": "http://fgnass.posterous.com"
+  },
+  "keywords": ["express", "jsdom", "jquery"],
+  "directories": { "lib": "./lib/express-jsdom" },
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url" : "https://github.com/fgnass/express-jsdom.git"
+  },
+  "dependencies": {
+    "jsdom": "0.1.21",
+    "hode-htmlparser": "1.7.2"
+  }
 }
