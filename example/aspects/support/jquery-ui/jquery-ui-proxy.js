@@ -1,0 +1,1 @@
+$.client('datepicker', 'sortable');

@@ -1,57 +1,84 @@
 require.paths.unshift(__dirname + '/../lib');
 
 var sys = require('sys'),
-  express = require('express');
+    express = require('express'),
+    dom = require('express-jsdom'),
+    dynaform = require('./aspects/dynaform'),
+    validation = require('./aspects/validation');
+
+dom.use(dom.populateForm)
+   .use(dom.redirectAfterPost)
+   .use(require('./aspects/default'));
+
+var session = express.session({store: new express.session.MemoryStore(), secret: Date.now()});
 
 var app = express.createServer();
 app.configure(function() {
   app.use(express.bodyDecoder())
-     .use(express.staticProvider(__dirname + '/public'))
-     .register('.html', require('express-jsdom'))
-     .set('views', __dirname + '/views')
-     .set('view options', {documentRoot: __dirname + '/public'})
+     .use(express.cookieDecoder())
      .use(app.router)
      .use(express.errorHandler({showStack: true, formatUrl: 'txmt'}));
 });
 
-app.get('/', function(req, res) {
-  var options = {};
+console.log('After app.configure()');
+console.dir(app.stack);
 
-  // This is a field-validation request
-  if (req.isXMLHttpRequest) {
-    // Use a custom render function to return the validation result, rather than the whole document
-    options.render = function(window, options) {
-      var name = req.query.validate,
-        value = req.query[name],
-        input = window.$(':input[name=' + name + ']');
-
-      // Set the value
-      input.val(value);
-
-      // Invoke the jquery.validate plugin
-      var validator = input.closest('form').validate();
-      var valid = validator.element(input);
-
-      // Return 'true' (if valid) or the error message
-      return (JSON.stringify(valid || validator.errorMap[name]));
-    };
-  }
-  res.render('form.html', options);
-});
-
-app.post('/', function(req, res) {
-  res.render('form.html', {
-    onready: function(window) {
-      var $ = window.$,
-        validator = $('form').validate();
-
-      // Populate the form fields 
-      $.each(req.body, function(name, value) {
-        $(':input[name=' + name + ']').val(value);
-      });
-      validator.form();
-    } 
+app.serve('/session', dom.saveState(session), function($) {
+  var clicks = 0;
+  $('#foo').relay('click', function() {
+    $('#counter').text(++clicks);
   });
 });
 
-app.listen(8081);
+app.get('/simple', dom.serve(__dirname + '/views/form'));
+
+app.get('/jquery', dom.serve(__dirname + '/views/form', dom.jquery, function($) {
+	$('body').append('<h1>Hello</h1>');
+}));
+
+
+app.serve('/form', validation, function($) {
+  $('form').handleSubmit(function() {
+    $(this).before('Thanks!');
+    this.reset();
+  })
+  .clientAndServer('validate', {
+    wrapper: 'b',
+    errorElement: 'span'
+  });
+
+  $('input[name=email]').remote(function(value) {
+    return value !== 'fgnass@neteye.de';
+  }, 'Address already taken.');
+});
+
+app.serve('/dynaform', dom.saveState(session), dynaform, function($, req) {
+//app.serve('/dynaform', dynaform, function($, req) {
+  /*
+  $.dynaform.register({
+    upload: function(options, upload) {
+      return upload(options).upload();
+    }
+  });
+  */
+  $('#elements').dynaform(req.json || {}, function() { //TODO: init with backing data
+    this.text('name')
+      .text('mail')
+      .textarea('comment', {required: true, label: 'Kommentar'})
+      .datepicker('birthday')
+      .upload('photo')
+      .list('phoneNumbers', {dragAndDrop: true}, function() {
+        this.text();
+      })
+      .list('addresses', {min: 1}, function() {
+        this.nested(function() {
+          this.text('city')
+            .text('street');
+        });
+      });
+  });
+});
+
+if (!module.parent) {
+  app.listen(8081);
+}

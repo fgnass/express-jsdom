@@ -1,73 +1,74 @@
-Server-side DOM for Express
-===========================
+Server-Side DOM, express style
+==============================
 
-The express-dom module provides a view-engine for express, that allows you to use client-side script libraries on the server.
+The express-jsdom module brings the power of DOM manipulation and CSS selectors to the server.
 
-    <html>
-    <head>
-      <script src="/js/jquery.js" runat="client+server"></script>
-    </head>
-    <body>
-      <div id="content">
-      </div>
-      <script runat="server">
-        var ul = $('#content').append('<ul>');
-        $(function() {
-          locals.features.forEach(function(feature) {
-            $('<li>').text(feature).appendTo(ul);
-          })
+    var express = require('express'),
+        dom = require('express-jddom'),
+        app = express.createServer();
+
+    app.serve('/hello', function(document) {
+        document.title = 'Hello World';
+    });
+
+
+View-Aspects
+============
+
+Similar to connect's middleware stack, view-aspects provide common functionality, that can be either globally applied or on a per-route basis. To get an idea of the possible applications, lets take a look at the bundled aspects:
+
+## JQuery
+
+Allows you to run jQuery code on both, client and server.
+
+    dom.use(dom.jquery);
+
+    app.serve('/hello', function($) {
+        $('body').append('<h1>Hello world</h1>');
+        $.clientReady(function() {
+          $.animate('h1', {fontSize: 42});
         });
-      </script>
-    </body>
-    </html>
-    
-You can control where a script should be executed using the **runat** attribute. A script can either run at the server, the client or at both sides. There's a demo in the example directory, that uses this feature to execute exactly the same form-validation code in the browser that also runs on the server-side:
+    });
+
+The same thing could also be written as:
+
+    app.serve('/hello', function($) {
+        $('<h1>Hello world</h1>').appendTo('body').client('animate', {fontSize: 42});
+    });
+
+You can also permanently redirect plugin methods to the client, which can be useful if you want to run code on the server, that was originally written for browsers.
+
+    app.serve('/hello', function($) {
+        $.client('animate');
+        $('h1').animate({fontSize: 42});
+    });
+
+## Form Population
+
+Fills form elements with the corresponding HTTP parameter values. If the name of a submit-button is encountered, a server-side click-event is triggered, which (if not canceled) results in the invocation of the submit handler.
+
+## Incremental Updates
+
+Client-side event is relayed to the server where the event listener is invoked. Resulting DOM mutations are captured and sent back to the client as list of jQuery operations to be applied.
+
+Fallback for noscript clients:
+...
+
+## Redirect After Post
+
+When handling a POST request,  this aspect sends a redirect instead of returning the document directly. The aspect appends a unique token as parameter to retrieve the temporarily stored DOM. Therefore this technique even works without cookies.
+
+## Server-Side State Saving
+
+It's also possible to store the complete DOM in the session. This can be useful if the state is too complex and can't be easily recreated upon each request.
+
+Asset-Management
+================
+
+Besides logic, view-aspects may also provide assets, like CSS files or client-side JavaScript libraries.
+
+Assets can be preprocessed (less, sass) and minified.
+The asset-manager does not only serve the files, it also handles the injection of the link/script elements.   
+
 
 ![Screenshot](https://github.com/downloads/fgnass/fgnass.github.com/server-side-jquery.png)
-
-## Locals
-
-Locals passed to the view are exposed as `window.locals` and can be accessed **once the DOM is ready**. Hence you should place your view logic within an event listener bound to the document's `load` or `DOMContentLoaded` event.
-
-## Document Root
-
-To run the same external script on both client *and* server, you need to set the documentRoot to the same directory as the staticProvider:
-
-    app.use(express.staticProvider(__dirname + '/public'))
-       .set('view options', {documentRoot: __dirname + '/public'});
-
-## Aspects
-
-Similar to Connect's middleware concept, express-jsdom provides the possibility to register functions that get called for each view, regardless of the route that was taken.
-
-### Callbacks
-
-* __onInit__ The DOM has been created from the HTML but the scripts haven't run yet. 
-* __scriptLoaded__ Called for each script being loaded.
-* __onReady__ Called in the capturing phase of the DOMContentLoaded event. 
-* __beforeRender__ Called immediately before the document is serialized.
-
-### Dependencies
-
-* __applyAfter__ Other aspects after which the current one should be applied, i.e. dependencies that need to be applied *before*.
-* __applyBefore__ Aspects before which the current one is to be applied, i.e. dependencies that need to be applied *afterwards*.
-
-## Requirements
-
-The module currently requires a [forked version of jsdom](https://github.com/fgnass/jsdom/), as it depends on the following features:
-
-* __Script execution upon insertion__ Scripts must not be executed before the script node is inserted into the document because we must ensure that the runat-attribute has been set (if present).
-* __Resource loader queue__ Scripts must be executed in document-order.
-* __Local resource path resolution__ For scripts that should be executed on both sides, the public path must be resolved to a local file. This is accomplished by the `documentRoot` option that can be specified when a document is created.
-* __Exported domtohtml interface__ The domtohtml functions must be exposed so that we can inject the runat-attribute checks.
-* __document.close()__ We need a way to signal the document that we've finished setting up the initial DOM structure. Since view-rendering in express is a two-phase process (first the content, then the layout), the window's load event must be deferred until the content fragment has been appended to the enclosing document.
-* __Element source location__ This feature is not strictly required, but is the key to precise error reporting. Errors in script-blocks will show up in the stack-trace as `/views/someview.html:23:1<script>1:8`, where 23:1 is the line/column number of the script tag and 1:8 the location within the script.
-
-## Roadmap
-
-* Make it work with jsdom upstream
-* Don't parse source-files on every request
-* Implement performant document cloning
-* Consider using an attribute other than ASP's *runat*, perhaps just "at" or "target"
-
-
