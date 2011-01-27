@@ -2,15 +2,15 @@
 <html>
 <head></head>
 <body>
-<form method="POST">
+<form method="post">
   <label>Name*</label>
   <input name="name" type="text" class="text required" />
 
   <label>Email*</label>
-  <input name="email" type="text" class="text required email" />
+  <input name="email" type="text" class="text required email uniqueEmail" />
 
   <p>Try <i>fgnass@neteye.de</i> to trigger a remote validation error.</p>
-  <input type="submit" class="submit" name="submit">
+  <input type="submit" class="submit" name="button">
 </form>
 </body>
 </html>
