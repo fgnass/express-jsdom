@@ -12,7 +12,7 @@ dom.use(dom.populateForm)
 
 var session = express.session({store: new express.session.MemoryStore(), secret: Date.now()});
 
-var app = express.createServer();
+var app = module.exports = express.createServer();
 app.configure(function() {
   app.use(express.bodyDecoder())
      .use(express.cookieDecoder())
