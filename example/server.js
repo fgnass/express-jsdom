@@ -20,9 +20,6 @@ app.configure(function() {
      .use(express.errorHandler({showStack: true, formatUrl: 'txmt'}));
 });
 
-console.log('After app.configure()');
-console.dir(app.stack);
-
 app.serve('/session', dom.saveState(session), function($) {
   var clicks = 0;
   $('#foo').relay('click', function() {
