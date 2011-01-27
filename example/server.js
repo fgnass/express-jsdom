@@ -1,17 +1,33 @@
 require.paths.unshift(__dirname + '/../lib');
 
+/**
+ * Module dependencies
+ */
 var express = require('express'),
     dom = require('express-jsdom'),
     dynaform = require('./aspects/dynaform'),
     validation = require('./aspects/validation');
 
+/**
+ * Global view aspects
+ */
 dom.use(dom.populateForm)
    .use(dom.redirectAfterPost)
    .use(require('./aspects/default'));
 
+/**
+ * Session middleware
+ */
 var session = express.session({store: new express.session.MemoryStore(), secret: Date.now()});
 
+/**
+ * Create the server and make it available to integration tests via module.exports.
+ */
 var app = module.exports = express.createServer();
+
+/**
+ * Configuration and middleware setup
+ */
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.use(express.bodyDecoder())
@@ -20,6 +36,10 @@ app.configure(function() {
      .use(express.errorHandler({showStack: true, formatUrl: 'txmt'}));
 });
 
+/**
+ * Stores the DOM state in the session and forwards client-events to the server
+ * where the document is updated and the changes are played back on the client.
+ */
 app.serve('/session', dom.saveState(session), function($) {
   var clicks = 0;
   $('#foo').relay('click', function() {
@@ -27,9 +47,15 @@ app.serve('/session', dom.saveState(session), function($) {
   });
 });
 
-app.get('/simple', dom.serve(__dirname + '/views/form'));
+/**
+ * Empty document with only global aspects applied.
+ */
+app.get('/simple', dom.serve());
 
-app.get('/jquery', dom.serve(__dirname + '/views/form', dom.jquery, function($) {
+/**
+ * H1 created with jQuery.
+ */
+app.get('/jquery', dom.serve(function($) {
 	$('body').append('<h1>Hello</h1>');
 }));
 
@@ -43,15 +69,10 @@ app.serve('/form', validation, function($) {
     wrapper: 'b',
     errorElement: 'span'
   });
-
-  $.validator.addMethod('uniqueEmail', function(value) {
-    return value !== 'fgnass@neteye.de';
-  }, 'Address already taken.');
-  $.validator.addClassRules('uniqueEmail', {uniqueEmail: true});
 });
 
-app.serve('/dynaform', dom.saveState(session), dynaform, function($, req) {
-//app.serve('/dynaform', dynaform, function($, req) {
+//app.serve('/dynaform', dom.saveState(session), dynaform, function($, req) {
+app.serve('/dynaform', dynaform, function($, req) {
   $('#elements').dynaform(req.json || {}, function() { //TODO: init with backing data
     this.text('name')
       .text('mail')
