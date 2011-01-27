@@ -1,7 +1,6 @@
 require.paths.unshift(__dirname + '/../lib');
 
-var sys = require('sys'),
-    express = require('express'),
+var express = require('express'),
     dom = require('express-jsdom'),
     dynaform = require('./aspects/dynaform'),
     validation = require('./aspects/validation');
@@ -14,6 +13,7 @@ var session = express.session({store: new express.session.MemoryStore(), secret:
 
 var app = module.exports = express.createServer();
 app.configure(function() {
+  app.set('views', __dirname + '/views');
   app.use(express.bodyDecoder())
      .use(express.cookieDecoder())
      .use(app.router)
@@ -52,19 +52,11 @@ app.serve('/form', validation, function($) {
 
 app.serve('/dynaform', dom.saveState(session), dynaform, function($, req) {
 //app.serve('/dynaform', dynaform, function($, req) {
-  /*
-  $.dynaform.register({
-    upload: function(options, upload) {
-      return upload(options).upload();
-    }
-  });
-  */
   $('#elements').dynaform(req.json || {}, function() { //TODO: init with backing data
     this.text('name')
       .text('mail')
       .textarea('comment', {required: true, label: 'Kommentar'})
       .datepicker('birthday')
-      .upload('photo')
       .list('phoneNumbers', {dragAndDrop: true}, function() {
         this.text();
       })
@@ -80,3 +72,4 @@ app.serve('/dynaform', dom.saveState(session), dynaform, function($, req) {
 if (!module.parent) {
   app.listen(8081);
 }
+
