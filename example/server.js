@@ -47,9 +47,10 @@ app.serve('/form', validation, function($) {
     errorElement: 'span'
   });
 
-  $('input[name=email]').remote(function(value) {
+  $.validator.addMethod('uniqueEmail', function(value) {
     return value !== 'fgnass@neteye.de';
   }, 'Address already taken.');
+  $.validator.addClassRules('uniqueEmail', {uniqueEmail: true});
 });
 
 app.serve('/dynaform', dom.saveState(session), dynaform, function($, req) {
