@@ -5,7 +5,6 @@ require.paths.unshift(__dirname + '/../lib');
  */
 var express = require('express'),
     dom = require('express-jsdom'),
-    dynaform = require('./aspects/dynaform'),
     validation = require('./aspects/validation');
 
 /**
@@ -59,7 +58,6 @@ app.get('/jquery', dom.serve(function($) {
 	$('body').append('<h1>Hello</h1>');
 }));
 
-
 app.serve('/form', validation, function($) {
   $('form').handleSubmit(function() {
     $(this).before('Thanks!');
@@ -68,25 +66,6 @@ app.serve('/form', validation, function($) {
   .clientAndServer('validate', {
     wrapper: 'b',
     errorElement: 'span'
-  });
-});
-
-//app.serve('/dynaform', dom.saveState(session), dynaform, function($, req) {
-app.serve('/dynaform', dynaform, function($, req) {
-  $('#elements').dynaform(req.json || {}, function() { //TODO: init with backing data
-    this.text('name')
-      .text('mail')
-      .textarea('comment', {required: true, label: 'Kommentar'})
-      .datepicker('birthday')
-      .list('phoneNumbers', {dragAndDrop: true}, function() {
-        this.text();
-      })
-      .list('addresses', {min: 1}, function() {
-        this.nested(function() {
-          this.text('city')
-            .text('street');
-        });
-      });
   });
 });
 
