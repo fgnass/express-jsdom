@@ -12,6 +12,7 @@ var express = require('express'),
  */
 dom.use(dom.populateForm)
    .use(dom.redirectAfterPost)
+   .use(require('./conditionalComments'))
    .use({assets: {css: __dirname + '/assets/default.less'}});
 
 /**
