@@ -5,14 +5,14 @@ require.paths.unshift(__dirname + '/../lib');
  */
 var express = require('express'),
     dom = require('express-jsdom'),
-    validation = require('./aspects/validation');
+    validation = require('./validation');
 
 /**
  * Global view aspects
  */
 dom.use(dom.populateForm)
    .use(dom.redirectAfterPost)
-   .use(require('./aspects/default'));
+   .use({assets: {css: __dirname + '/assets/default.less'}});
 
 /**
  * Session middleware
@@ -28,9 +28,9 @@ var app = module.exports = express.createServer();
  * Configuration and middleware setup
  */
 app.configure(function() {
-  app.set('views', __dirname + '/views');
   app.use(express.bodyDecoder())
      .use(express.cookieDecoder())
+     .use(dom.middleware())
      .use(app.router)
      .use(express.errorHandler({showStack: true, formatUrl: 'txmt'}));
 });
@@ -63,7 +63,7 @@ app.serve('/form', validation, function($) {
     $(this).before('Thanks!');
     this.reset();
   })
-  .clientAndServer('validate', {
+  .validate({
     wrapper: 'b',
     errorElement: 'span'
   });

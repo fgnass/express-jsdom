@@ -18,6 +18,10 @@
   "dependencies": {
     "jsdom": "0.1.23",
     "html5": "0.2.12",
-    "express": "1.0.3"
+    "express": "1.0.3",
+    "uglify-js": "0.0.3"
+  },
+  "devDependencies": {
+    "tobi": "0.1.1"
   }
 }

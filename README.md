@@ -100,7 +100,7 @@ Fallback for noscript clients:
 
 ## Redirect After Post
 
-When handling a POST request,  this aspect sends a redirect instead of returning the document directly. The aspect appends a unique token as parameter to retrieve the temporarily stored DOM. Therefore this technique even works without cookies.
+When handling a POST request, this aspect sends a redirect instead of returning the document directly. The aspect appends a unique token as parameter to retrieve the temporarily stored DOM. Therefore this technique even works without cookies.
 
 ## Server-Side State Saving
 
