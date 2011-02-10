@@ -5,10 +5,10 @@ var tobi = require('tobi'),
 browser.get('/form', function(res, $) {
   res.should.have.status(200);
   $('form')
-    .fill({ name: 'Felix', email: 'fgnass@neteye.de' })
+    .fill({ name: 'Felix'})
     .submit(function(res, $) {
       res.should.have.status(200);
-      $('.error').should.include.text('Address already taken.');
+      $('.error').should.include.text('This field is required.');
       console.log('successful');
       process.exit();
     });
