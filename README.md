@@ -11,101 +11,76 @@ The express-jsdom module brings the power of DOM manipulation and CSS selectors 
         document.title = 'Hello World';
     });
 
-View-Aspects
-============
+JQuery Support
+==============
 
-Similar to connect's middleware stack, view-aspects provide common functionality, that can be either globally applied or on a per-route basis. The bundled aspects for example allow you to populate forms with HTTP parameters, handle client-side events (like clicks) on the server, automatically send redirects after post, or use jQuery.
+With express-jsdom you may also use your [jQuery](http://jquery.com/) skills on the server:
 
     dom.use(dom.jquery);
 
     app.serve('/hello', function($) {
         $('body').append('<h1>Hello world</h1>');
-        $.clientReady(function() {
-          $.animate('h1', {fontSize: 42});
-        });
     });
 
-Aspects are regular CommonJS modules that may register event handlers by exporting functions. 
+You can also execute the _same code_ on both client and server. This is especially useful for tasks like form validation. Here's an example that uses the official [jQuery validation plugin](http://docs.jquery.com/Plugins/Validation):
 
-* __onInit__ The DOM has been created from the HTML but the scripts haven't run yet.
-* __onLoad__ Called in the capturing phase of the DOMContentLoaded event.
-* __beforeRender__ Called immediately before the document is serialized.
+    /**
+     * Serve /form.html and validate it upon submit.
+     */
+    app.serve('/form', validation, function($) {
+      $('form').validate();
+    });
 
-The function arguments are resolved by name, i.e. for each parameter the context-property with the same name is passed. 
-Possible argument names include `window`, `document`, `req`, `res` or `options`. If an aspect depends on jQuery, it can also use `$` or `jQuery` as argument names. Dependencies can be defined by exporting a `depends` object, which may either be another aspect, an array, or the name of a built-in aspect as string.
+View Aspects
+============
 
-    exports.depends = require('./someAspect');
+The example above works by passing an _aspect_ as second parameter. Aspects are similar to connect's middleware stack, as they provide common functionality that can be either globally applied or on a per-route basis.
 
-Asset-Management
-================
+Here's the code of the validation aspect:
 
-Besides logic, view-aspects may also provide assets, like CSS files or client-side JavaScript libraries.
+    var validation = {
+      depends: 'jquery',
+      assets: {
+         css: __dirname + '/assets/form.css',
+         js: __dirname + '/assets/jquery.validate.js', // Location of the plugin
+         server: true // Load the plugin on the server, too
+      },
+      onInit = function($) {
+        // Intercept calls to the validate() method and execute it on client and server
+        $.clientAndServer('validate');
+      }
+    };
 
-Assets can be preprocessed (less, sass) and minified.
-The asset-manager does not only serve the files, it also handles the injection of the link/script elements.   
+The express-jsdom module comes with a number of built-in aspects, which for example allow you to populate forms with HTTP parameters, handle client-side events (like clicks) on the server, implement server-side state saving or automatically send redirects after post request.
 
+Stylus & UglifyJS
+=================
 
+As shown in the previous example, express-jsdom also manages assets like client-side JavaScript libraries or CSS files.
+Assets can be preprocessed (stylus, less, sass) and minified (uglify, cssmin). The asset manager does not only serve the files, it also handles the injection of the link/script elements into the DOM.   
 
-The `app.serve()` method is actually a shortcut. We could also write:
+API
+===
+
+The `app.serve()` call in the first example is actually a shortcut. We could also write:
 
     app.all('/hello', dom.serve('/hello.html', function(document) {
         document.title = 'Hello World';
     });
 
-The `/hello.html` parameter is the location of a HTML file (relative to your application's view directory). The file is parsed, in order to create the initial DOM.
+The `/hello.html` parameter is the location of a HTML file (relative to the application's base directory). The file is parsed, in order to create the initial DOM. Instead of parsing an existing HTML file, you may also create a document from scratch:
 
-//TODO: Support blank documents
-
-
-
-Bundled Aspects
-===============
-
-## JQuery
-
-Allows you to run jQuery code on both, client and server.
-
-    dom.use(dom.jquery);
-
-    app.serve('/hello', function($) {
-        $('body').append('<h1>Hello world</h1>');
-        $.clientReady(function() {
-          $.animate('h1', {fontSize: 42});
-        });
+    app.all('/hello', dom.serve(function(document) {
+        document.body.innerHTML = '<h1>Hello World</h1>';
+    });
+    
+You can also use jQuery's DOM builder functions:
+    
+    app.all('/hello', dom.jQuery, dom.serve(function($) {
+        $('body').append($('<h1>').text('Hello world'));
     });
 
-The same thing could also be written as:
-
-    app.serve('/hello', function($) {
-        $('<h1>Hello world</h1>').appendTo('body').client('animate', {fontSize: 42});
-    });
-
-You can also permanently redirect plugin methods to the client, which can be useful if you want to run code on the server, that was originally written for browsers.
-
-    app.serve('/hello', function($) {
-        $.client('animate');
-        $('h1').animate({fontSize: 42});
-    });
-
-## Form Population
-
-Fills form elements with the corresponding HTTP parameter values. If the name of a submit-button is encountered, a server-side click-event is triggered, which (unless canceled) results in the invocation of the submit handler.
-
-## Incremental Updates
-
-Client-side event is relayed to the server where the event listener is invoked. Resulting DOM mutations are captured and sent back to the client as list of jQuery operations to be applied.
-
-Fallback for noscript clients:
-...
-
-## Redirect After Post
-
-When handling a POST request, this aspect sends a redirect instead of returning the document directly. The aspect appends a unique token as parameter to retrieve the temporarily stored DOM. Therefore this technique even works without cookies.
-
-## Server-Side State Saving
-
-It's also possible to store the complete DOM in the session. This can be useful if the state is too complex and can't be easily recreated upon each request.
-
+You may have noticed, that the second example takes `$` as argument, whereas the first one takes `document`. In fact you may declare arbitrary arguments, including `window`, `req`, `res` or `options`, as well as all properties of the window object. Hence `jQuery` and `$` are valid argument names, as jQuery defines `window.$` and `window.jQuery`.
 
 Performance
 ===========
