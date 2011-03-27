@@ -1,0 +1,103 @@
+border-radius()
+  -webkit-border-radius arguments
+  -moz-border-radius arguments
+  border-radius arguments
+
+inset()
+  box-shadow inset 0 0 1px 1px argments
+  -moz-box-shadow inset 0 0 1px 1px argments
+  -webkit-box-shadow inset 0 0 1px 1px argments
+
+body
+  background #eee
+  font-family Helvetica
+  padding 20px
+
+
+label, p 
+  color #555
+  text-shadow #fff 0 1px 1px
+
+h1 
+  font-size 24px
+  color #444
+
+p 
+  margin 10px 0 30px 5px
+  font-size 14px
+
+label 
+  font-size 14px
+  font-weight bold
+  margin 20px 0 2px 1px
+  display block
+
+
+/* Input fields */
+input.text 
+  border 1px solid #ddd
+  width 375px
+  padding 6px
+  font-size 14px
+  color #555
+  vertical-align middle
+
+
+/* Error placement */
+
+b 
+  font-weight normal
+  font-family Arial, sans-serif
+  font-size 14px
+  vertical-align middle
+
+  &:before 
+    content "◄"
+    color #ea5338
+    vertical-align middle
+    text-shadow 1px 1px 4px rgba(0,0,0,0.2)
+
+span.error 
+  background #ea5338
+  color #fff
+  margin-left -6px
+  \_margin-left 0
+  padding 4px 6px
+  border-radius 2px
+  -moz-box-shadow 2px 2px 4px rgba(0,0,0,0.2)
+  -webkit-box-shadow 2px 2px 4px rgba(0,0,0,0.2)
+  vertical-align middle
+
+.buttons 
+  margin-top 20px
+
+
+input.submit 
+  background #e4e4e4
+  border 1px solid #ccc
+  
+  border-radius 3px
+  inset #f6f6f6
+
+  color #333
+  font-family Helvetica, Arial, sans-serif
+  font-size 12px
+  font-weight bold
+
+  padding 8px 20px 9px
+  text-align center
+  text-shadow 0 1px 0px #fff
+  
+  &hover 
+    background #eee
+    inset #fff
+    color #444
+  
+
+  &active 
+    background #e0e0e0
+    color #000
+
+* html input.submit 
+  padding 4px 0px 5px
+

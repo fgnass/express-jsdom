@@ -16,10 +16,10 @@
     "url" : "https://github.com/fgnass/express-jsdom.git"
   },
   "dependencies": {
-    "jsdom": "0.1.23",
-    "html5": "0.2.12",
-    "express": "1.0.3",
-    "uglify-js": "0.0.3"
+    "jsdom": "0.2.0",
+    "html5": "0.2.14",
+    "express": "2.0.0beta2",
+    "uglify-js": "0.0.5"
   },
   "devDependencies": {
     "tobi": "0.1.1"
