@@ -10,7 +10,7 @@
   },
   "keywords": ["express", "jsdom", "jquery"],
   "directories": { "lib": "./lib/express-jsdom" },
-  "main": "./index.js",
+  "main": "./lib/express-jsdom.js",
   "repository": {
     "type": "git",
     "url" : "https://github.com/fgnass/express-jsdom.git"

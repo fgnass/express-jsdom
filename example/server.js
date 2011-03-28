@@ -55,7 +55,7 @@ dom.get('/socket', 'relay', function($) {
 /**
  * Form validation example.
  */
-dom.get('/form', dom.parse, require('./validation'), function($) {
+dom.all('/form', dom.parse, require('./validation'), function($) {
   $('form').submitDefault(function() {
     $(this).before('Thanks!');
     this.reset();
