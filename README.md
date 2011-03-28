@@ -165,4 +165,18 @@ In out example, every time the `<h1>` element is clicked, a new `<h2>` is insert
 
 There's a second plugin method called `.liveRelay()` which does a similar thing, but instead of calling [`.bind()`](http://api.jquery.com/bind/) it uese jQuery's [`.live()`](http://api.jquery.com/live/) method to register the event handler. This way clicks to all newly inserted `<h2>` element are also automatically forwarded to the server. 
 
+Asynchronous Responses
+======================
 
+You may use `res.defer()` to defer the response until all callbacks have been invoked. Here's an example that calls two async functions to build the document:
+
+    dom.get('/', function(document, res) {
+      fs.realpath(__filename, res.defer(function(err, resolvedPath) {
+        document.title = resolvedPath;
+      }));
+      fs.readdir(__dirname, res.defer(function(err, files) {
+        document.body.innerHTML = files.join('<br>');
+      }));
+    });
+
+Calling `res.defer(fn)` returns a proxy function that delegates all calls to _fn_. All proxies have to be invoked in order to send the response to the client. Calling the same proxy twice will throw an error.

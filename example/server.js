@@ -3,7 +3,8 @@ require.paths.unshift(__dirname + '/../lib');
 /**
  * Module dependencies
  */
-var express = require('express');
+var fs = require('fs'),
+  express = require('express');
 
 /**
  * Create the server and make it available to integration tests via module.exports.
@@ -63,6 +64,16 @@ dom.get('/form', dom.parse, require('./validation'), function($) {
     wrapper: 'b',
     errorElement: 'span'
   });
+});
+
+
+dom.get('/async', function(document, res) {
+  fs.realpath(__filename, res.defer(function(err, resolvedPath) {
+    document.title = resolvedPath;
+  }));
+  fs.readdir(__dirname, res.defer(function(err, files) {
+    document.body.innerHTML = files.join('<br>');
+  }));
 });
 
 if (!module.parent) {
