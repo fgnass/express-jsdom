@@ -30,17 +30,17 @@ dom.get('/simple', function(document) {
 });
 
 /**
- * H1 created with jQuery.
+ * H1 created with zepto.js.
  */
-dom.get('/jquery', 'jquery', function($) {
-	$('body').append('<h1>Hello</h1>');
+dom.get('/zepto', '$', function($) {
+  $('body').append('<h1>Hello</h1>');
 });
 
 /**
  * Plain express response.
  */
 app.get('/express', function(req, res) {
-	res.send('<html><body><h1>Hello</h1></body></html>');
+  res.send('<html><body><h1>Hello</h1></body></html>');
 });
 
 
@@ -48,17 +48,19 @@ app.get('/express', function(req, res) {
  * Websocket example.
  */
 dom.get('/socket', 'relay', function($) {
-	$('<h1>Hello</h1>').appendTo('body').relay('click', function() {
-	  $(this).after("<h2>world</h2>");
-	});
+  $('<h1>Hello</h1>').appendTo('body').relay('click', function() {
+    $(this).after("<h2>world</h2>");
+  });
 
-	$('h2').liveRelay('click', function() {
-	  $(this).remove();
-	});
+  $('h2').liveRelay('click', function() {
+    $(this).remove();
+  });
 });
 
+dom.get('/live', dom.parse('form.html'), 'liveStyle');
+
 /**
- * Form validation example.
+ * Form validation with happy.js
  */
 dom.all('/form', dom.parse, require('./validation'), function($) {
   $('form').clientAndServer('isHappy', {
