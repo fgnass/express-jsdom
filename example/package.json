@@ -1,0 +1,16 @@
+{
+  "name": "express-jsdom-example",
+  "version": "0.0.1",
+  "description": "Example app for express-jsdom",
+  "homepage": "https://github.com/fgnass/express-jsdom",
+  "author": {
+    "name": "Felix Gnass",
+    "email": "felix.gnass@neteye.de",
+    "url": "http://fgnass.posterous.com"
+  },
+  "keywords": ["express", "jsdom", "jquery"],
+  "main": "./server.js",
+  "dependencies": {
+    "express-jsdom": ">0.0.1"
+  }
+}
