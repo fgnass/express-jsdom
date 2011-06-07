@@ -37,10 +37,17 @@ dom.get('/jquery', 'jquery', function($) {
 });
 
 /**
+ * Plain express response.
+ */
+app.get('/express', function(req, res) {
+	res.send('<html><body><h1>Hello</h1></body></html>');
+});
+
+
+/**
  * Websocket example.
  */
 dom.get('/socket', 'relay', function($) {
-
 	$('<h1>Hello</h1>').appendTo('body').relay('click', function() {
 	  $(this).after("<h2>world</h2>");
 	});
@@ -54,16 +61,38 @@ dom.get('/socket', 'relay', function($) {
  * Form validation example.
  */
 dom.all('/form', dom.parse, require('./validation'), function($) {
-  $('form').submitDefault(function() {
-    $(this).before('Thanks!');
-    this.reset();
+  $('form').clientAndServer('isHappy', {
+    fields: {
+      // reference the field you're talking about, probably by `id`
+      // but you could certainly do $('[name=name]') as well.
+      '#name': {
+        required: true,
+        message: 'Might we inquire your name'
+      },
+      '#email': {
+        required: true,
+        message: 'How are we to reach you sans email??'
+        //test: happy.email // this can be *any* function that returns true or false
+      }
+    }
   })
-  .clientAndServer('validate', {
-    wrapper: 'b',
-    errorElement: 'span'
+  .submitDefault(function() {
+    $(this).before('<p>Thanks!</p>');
+    this.reset();
   });
 });
 
+/**
+ * Weld example.
+ */
+dom.get('/weld', dom.parse('contacts.html'), 'weld', function($) {
+  var data = [
+    { name: 'hij1nx',  title : 'code slayer' },
+    { name: 'tmpvar', title : 'code pimp' },
+    { name: 'fgnass', title : 'me' }
+  ];
+  $('.contact').weld(data);
+});
 
 dom.get('/async', function(document, res) {
   fs.realpath(__filename, res.defer(function(err, resolvedPath) {

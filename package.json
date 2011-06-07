@@ -22,7 +22,8 @@
     "mime": ">=0.0.1",
     "socket.io": "0.6.17",
     "uglify-js": ">=0.0.1",
-    "stylus": ">=0.0.1"
+    "stylus": ">=0.0.1",
+    "weld": "0.2.0"
   },
   "devDependencies": {
     "tobi": "0.1.1"

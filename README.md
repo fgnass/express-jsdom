@@ -27,7 +27,7 @@ With express-jsdom you may also use your [jQuery](http://jquery.com/) skills on 
 Seamless Event Handling
 =======================
 
-The best thing about having a server-side representation of the client's DOM is that it allows you to handle browser events on the server. The browser then opens a websocket connection which is used to keep the server and client side DOM in sync.
+The best thing about having a server-side representation of the client's DOM is that it allows you to handle browser events on the server. The browser opens a websocket connection which is used to keep the server and client side DOM in sync.
 
 The server can subscribe to any client-side event. When such an event is dispatched on the client, it is forwarded to the server where it gets re-dispatched. All modifications made to the server-side DOM are captured and replayed on the client.
 
@@ -139,6 +139,21 @@ This will load `<baseDir>/views/home.html`. If the file you want to load equals 
     dom.get('/home', dom.parse, function() {})
     
 __Note:__ If the path doesn't contain a dot, _dom.parse_ will append `.html` as file extension.
+
+Unobtrusive Templating
+======================
+
+After parsing a HTML fragment you may use [weld](https://github.com/hij1nx/weld) to populate it with data:
+
+    dom.get('/contacts', dom.parse, 'weld', function($) {
+      var data = [
+        { name: 'hij1nx',  title : 'code slayer' },
+        { name: 'tmpvar', title : 'code pimp' },
+        { name: 'fgnass', title : 'me' }
+      ];
+      $('.contact').weld(data);
+    });
+
 
 JQuery Event Relay
 ==================
