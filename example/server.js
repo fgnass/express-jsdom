@@ -33,7 +33,8 @@ dom.get('/simple', function(document) {
  * H1 created with zepto.js.
  */
 dom.get('/zepto', '$', function($) {
-  $('body').append('<h1>Hello</h1>');
+  var h1 = $('<h1>Hello</h1>');
+  $('body').append(h1);
 });
 
 /**
