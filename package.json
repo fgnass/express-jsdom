@@ -16,8 +16,8 @@
     "url" : "https://github.com/fgnass/express-jsdom.git"
   },
   "dependencies": {
-    "jsdom": "0.2.8",
-    "html5": "0.3.2",
+    "jsdom": "0.2.10",
+    "html5": "0.3.5",
     "express": "2.4.6",
     "mime": ">=1.2.2",
     "socket.io": ">=0.8.4",
