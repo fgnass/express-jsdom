@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/fgnass/express-jsdom.png)](http://travis-ci.org/fgnass/express-jsdom)
 The express-jsdom module provides an alternative approach to building web applications with [express](http://expressjs.com/).
 
 Instead of using templates to create markup, it uses the same object model as the browser to build documents. Once the document has been assembled on the server, it is serialized and sent to the client as HTML.
